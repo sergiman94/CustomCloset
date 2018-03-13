@@ -46,19 +46,7 @@
 		// Graphics variables
 		var container, stats;
 		var camera, controls, scene, renderer;
-		var textureLoader;
-		var clock = new THREE.Clock();
-
-		// Physics Variables
-		var gravityConstant = -9.8;
-		var physicsWorld;
-		var rigidBodies = [];
-		var margin = 0.05;
-		var hinge;
-		var cloth;
-		var transformAux1 = new Ammo.btTransform();
-		var time = 0;
-		var armMovement = 0;
+		var ambientLight;
 
 
 		function init(){
@@ -77,49 +65,20 @@
 
 			scene = new THREE.Scene();
 			scene.background = new THREE.Color( 0xbfd1e5 );
+			scene.fog = new THREE.Fog( 0xE6E6E6, 0, 750 );
 			camera.position.set( 0, 15, 30);
 
+			//Orbit controls
+			controls();
 
-			controls = new THREE.OrbitControls( camera );
-			controls.target.set( 0, 2, 0 );
-			controls.enableZoom = true;
-			controls.update();
-
-			renderer = new THREE.WebGLRenderer();
-			renderer.setPixelRatio( window.devicePixelRatio );
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			renderer.shadowMap.enabled = true;
-
-			textureLoader = new THREE.TextureLoader();
-
-			var ambientLight = new THREE.AmbientLight( 0x404040 );
-			scene.add( ambientLight );
-
-			var light = new THREE.DirectionalLight( 0xffffff, 1 );
-			light.position.set( -7, 10, 15 );
-			light.castShadow = true;
-
-			var d = 10;
-
-			light.shadow.camera.left = -d;
-			light.shadow.camera.right = d;
-			light.shadow.camera.top = d;
-			light.shadow.camera.bottom = -d;
-			light.shadow.camera.near = 2;
-			light.shadow.camera.far = 50;
-			light.shadow.mapSize.x = 1024;
-			light.shadow.mapSize.y = 1024;
-			light.shadow.bias = -0.003;
-			scene.add( light );
+			//render
+			render();
 
 			container.innerHTML = "";
 			container.appendChild( renderer.domElement );
 
-			stats = new Stats();
-			stats.domElement.style.position = 'absolute';
-			stats.domElement.style.top = '0px';
-			container.appendChild( stats.domElement );
-			window.addEventListener( 'resize', onWindowResize, false );
+			//monitor performance
+			monitorPerformance();
 
 		}
 
@@ -127,11 +86,19 @@
 			//instances
 			model = new Model();
 			floorObject = new FloorObject();
-			crateObject = new CrateObject()
+			crateObject = new CrateObject();
+			light = new Light();
 
 			//objects
 			floorObject.show(2000,2000,10,100);
 			model.showModelWithTexture(0, 0, 0, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
+
+			// light objects
+			light.pointLight(0xffffff,1.0, 18);
+
+			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+	    ambientLight.position.set(-3,6,-3);
+			scene.add(ambientLight);
 
 		}
 
@@ -143,6 +110,27 @@
 		}
 
 
+		function render() {
+			renderer = new THREE.WebGLRenderer();
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.shadowMap.enabled = true;
+		}
+
+		function monitorPerformance() {
+			stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			container.appendChild( stats.domElement );
+			window.addEventListener( 'resize', onWindowResize, false );
+		}
+
+		function controls() {
+			controls = new THREE.OrbitControls( camera );
+			controls.target.set( 0, 2, 0 );
+			controls.enableZoom = true;
+			controls.update();
+		}
 
 		// WINDOW RESIZE
 		function onWindowResize() {
@@ -152,7 +140,7 @@
 		}
 
 
-
+		// ----------------------------------------------------------------\\
 	</script>
 
 

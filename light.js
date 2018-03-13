@@ -2,9 +2,12 @@
 
 function Light() {
 
-  this.ambientLight = function (x, y, z, color, intensity) {
+  this.ambientLight = function ( color, intensity) {
     ambientLight = new THREE.AmbientLight(color, intensity);
-    ambientLight.position.set(x, y, z );
+    ambientLight.position.set(-3,6,-3);
+    ambientLight.castShadow = true;
+  	ambientLight.shadow.camera.near = 0.1;
+  	ambientLight.shadow.camera.far = 25;
   	scene.add(ambientLight);
   }
 
