@@ -19,7 +19,7 @@
 	</head>
 	<body>
 
-		<div id="container"><br /><br /><br /><br /><br /></div>
+	<div id="container"><br /><br /><br /><br /><br /></div>
 		<script src="floorObject.js"></script>
 		<script src="light.js"></script>
 		<script src="Model.js"></script>
@@ -34,7 +34,7 @@
 		<script src="OrbitControls.js"></script>
 		<script src="ammo.js"></script>
 
-		<script>
+	<script>
 
 		// ----------------------------------------------------------------\\
 
@@ -58,6 +58,8 @@
 		}
 
 		function initGraphics() {
+
+			textureLoader = new THREE.TextureLoader();
 
 			container = document.getElementById( 'container' );
 
@@ -94,10 +96,11 @@
 			model.showModelWithTexture(0, 0, 0, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
 
 			// light objects
-			light.pointLight(0xffffff,1.0, 18);
+			light.pointLight(-3,6,-3, 0xffffff,0.5, 15);
+			
 
 			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-	    ambientLight.position.set(-3,6,-3);
+	    ambientLight.position.set(0,10,0);
 			scene.add(ambientLight);
 
 		}

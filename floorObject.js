@@ -1,21 +1,30 @@
+
+var bs = 100;
+
 function FloorObject(){
 
   this.show = function(x,y, width, height){
 
     var floorGeometry = new THREE.PlaneGeometry(x, y, width, height)
 
-    var floorMaterial = new THREE.MeshPhongMaterial( {
-      color:0x298A08,
-      map:crateTexture,
-      bumpMap:crateBumpMap,
-      normalMap:crateNormalMap
-    });
+    var floorMaterial = new THREE.MeshLambertMaterial( {color:0xffffff, side: THREE.DoubleSide });
 
     meshFloor = new THREE.Mesh(floorGeometry, floorMaterial);
+    meshFloor.castShadow = true;
+    meshFloor.receiveShadow = true;
     meshFloor.rotation.x -= Math.PI / 2;
     meshFloor.receiveShadow = true;
-
     scene.add(meshFloor);
+    textureLoader.load( "models/grid.png", function( texture ) {
+					texture.wrapS = THREE.RepeatWrapping;
+					texture.wrapT = THREE.RepeatWrapping;
+					texture.repeat.set(bs * 10 , bs * 10 );
+					meshFloor.material.map = texture;
+					meshFloor.material.needsUpdate = true;
+				}
+
+    );
+
 
   }
 
