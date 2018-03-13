@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang = "en">
+	<head>
+		<title>FinalProject</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #61443e;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				background-color: #bfd1e5;
+				margin: 0px;
+				overflow: hidden;
+			}
+		</style>
+
+	</head>
+	<body>
+
+		<div id="container"><br /><br /><br /><br /><br /></div>
+		<script src="floorObject.js"></script>
+		<script src="light.js"></script>
+		<script src="Model.js"></script>
+		<script src="stats.min.js"></script>
+		<script src="crateObject.js"></script>
+
+
+		<script src="three.js"></script>
+    <script src="DDSLoader.js"></script>
+    <script src="MTLLoader.js"></script>
+    <script src="OBJLoader.js"></script>
+		<script src="OrbitControls.js"></script>
+		<script src="ammo.js"></script>
+
+		<script>
+
+		// ----------------------------------------------------------------\\
+
+		init();
+		animate();
+
+		var floorObject;
+
+		// Graphics variables
+		var container, stats;
+		var camera, controls, scene, renderer;
+		var textureLoader;
+		var clock = new THREE.Clock();
+
+		// Physics Variables
+		var gravityConstant = -9.8;
+		var physicsWorld;
+		var rigidBodies = [];
+		var margin = 0.05;
+		var hinge;
+		var cloth;
+		var transformAux1 = new Ammo.btTransform();
+		var time = 0;
+		var armMovement = 0;
+
+
+		function init(){
+
+			initGraphics();
+
+			createObjects();
+
+		}
+
+		function initGraphics() {
+
+			container = document.getElementById( 'container' );
+
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.2, 2000 );
+
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color( 0xbfd1e5 );
+			camera.position.set( 0, 15, 30);
+
+
+			controls = new THREE.OrbitControls( camera );
+			controls.target.set( 0, 2, 0 );
+			controls.enableZoom = true;
+			controls.update();
+
+			renderer = new THREE.WebGLRenderer();
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.shadowMap.enabled = true;
+
+			textureLoader = new THREE.TextureLoader();
+
+			var ambientLight = new THREE.AmbientLight( 0x404040 );
+			scene.add( ambientLight );
+
+			var light = new THREE.DirectionalLight( 0xffffff, 1 );
+			light.position.set( -7, 10, 15 );
+			light.castShadow = true;
+
+			var d = 10;
+
+			light.shadow.camera.left = -d;
+			light.shadow.camera.right = d;
+			light.shadow.camera.top = d;
+			light.shadow.camera.bottom = -d;
+			light.shadow.camera.near = 2;
+			light.shadow.camera.far = 50;
+			light.shadow.mapSize.x = 1024;
+			light.shadow.mapSize.y = 1024;
+			light.shadow.bias = -0.003;
+			scene.add( light );
+
+			container.innerHTML = "";
+			container.appendChild( renderer.domElement );
+
+			stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			container.appendChild( stats.domElement );
+			window.addEventListener( 'resize', onWindowResize, false );
+
+		}
+
+		function createObjects() {
+			//instances
+			model = new Model();
+			floorObject = new FloorObject();
+			crateObject = new CrateObject()
+
+			//objects
+			floorObject.show(2000,2000,10,100);
+			model.showModelWithTexture(0, 0, 0, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
+
+		}
+
+		function animate(){
+			requestAnimationFrame(animate);
+
+			renderer.render(scene, camera);
+			stats.update();
+		}
+
+
+
+		// WINDOW RESIZE
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
+
+
+	</script>
+
+
+	</body>
+</html>
