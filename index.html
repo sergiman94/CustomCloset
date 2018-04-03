@@ -36,20 +36,19 @@
 
 	<script>
 
-		//----------------------------MAIN FUNCTIONS------------------------------\\
+		//-----------------------------MAIN FUNCTIONS-----------------------------\\
 
 		init();
 		animate();
 
-		//--------------------------GLOBAL VARIABLES------------------------------\\
+		//-----------------------------GLOBAL FUNCTIONS---------------------------\\
 
-		// Graphics variables
+		var floorObject;
 		var container, stats;
 		var camera, controls, scene, renderer;
 		var ambientLight;
-		var floorObject;
 
-		//------------------------------INIT FUNCTIONS----------------------------\\
+		//-----------------------------INIT FUNCTIONS-----------------------------\\
 		function init(){
 
 			initGraphics();
@@ -85,7 +84,7 @@
 
 		}
 
-		//------------------------------IMPORTANT FUNCTIONS-----------------------\\
+		//-----------------------------IMOORTANT FUNCTIONS------------------------\\
 
 		function animate(){
 			requestAnimationFrame(animate);
@@ -115,6 +114,17 @@
 			renderer.setSize( window.innerWidth, window.innerHeight );
 		}
 
+		//-----------------------------CONTROLS FUNCTIONS-------------------------\\
+
+		function controls() {
+			controls = new THREE.OrbitControls( camera );
+			controls.target.set( 0, 2, 0 );
+			controls.enableZoom = true;
+			controls.update();
+		}
+
+		//-----------------------------OBJECTS FUNCTIONS--------------------------\\
+
 		function createObjects() {
 			//instances
 			model = new Model();
@@ -127,7 +137,7 @@
 			model.showModelWithTexture(0, 0, 0, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
 
 			// light objects
-			light.pointLight(-,6,-3, 0xffffff,0.5, 15);
+			light.pointLight(-1,6,-3, 0xffffff,0.5, 15);
 
 
 			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -136,39 +146,9 @@
 
 		}
 
-		//------------------------------OBJECTS FUNCTIONS-----------------------\\
-
-		function createObjects() {
-			//instances
-			model = new Model();
-			floorObject = new FloorObject();
-			crateObject = new CrateObject();
-			light = new Light();
-
-			//objects
-			floorObject.show(2000,2000,10,100);
-			model.showModelWithTexture(0, 0, 0, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
-
-			// light objects
-			light.pointLight(-,6,-3, 0xffffff,0.5, 15);
-
-
-			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-			ambientLight.position.set(0,10,0);
-			scene.add(ambientLight);
-
-		}
-
-		//------------------------------CONTROLS FUNCTIONS------------------------\\
-		function controls() {
-			controls = new THREE.OrbitControls( camera );
-			controls.target.set( 0, 2, 0 );
-			controls.enableZoom = true;
-			controls.update();
-		}
-
 		// ----------------------------------------------------------------\\
 	</script>
+
 
 	</body>
 </html>
