@@ -36,19 +36,20 @@
 
 	<script>
 
-		// ----------------------------------------------------------------\\
+		//----------------------------MAIN FUNCTIONS------------------------------\\
 
 		init();
 		animate();
 
-		var floorObject;
+		//--------------------------GLOBAL VARIABLES------------------------------\\
 
 		// Graphics variables
 		var container, stats;
 		var camera, controls, scene, renderer;
 		var ambientLight;
+		var floorObject;
 
-
+		//------------------------------INIT FUNCTIONS----------------------------\\
 		function init(){
 
 			initGraphics();
@@ -84,26 +85,7 @@
 
 		}
 
-		function createObjects() {
-			//instances
-			model = new Model();
-			floorObject = new FloorObject();
-			crateObject = new CrateObject();
-			light = new Light();
-
-			//objects
-			floorObject.show(2000,2000,10,100);
-			model.showModelWithTexture(0, 0, 0, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
-
-			// light objects
-			light.pointLight(-3,6,-3, 0xffffff,0.5, 15);
-			
-
-			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-	    ambientLight.position.set(0,10,0);
-			scene.add(ambientLight);
-
-		}
+		//------------------------------IMPORTANT FUNCTIONS-----------------------\\
 
 		function animate(){
 			requestAnimationFrame(animate);
@@ -111,7 +93,6 @@
 			renderer.render(scene, camera);
 			stats.update();
 		}
-
 
 		function render() {
 			renderer = new THREE.WebGLRenderer();
@@ -128,6 +109,57 @@
 			window.addEventListener( 'resize', onWindowResize, false );
 		}
 
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
+		function createObjects() {
+			//instances
+			model = new Model();
+			floorObject = new FloorObject();
+			crateObject = new CrateObject();
+			light = new Light();
+
+			//objects
+			floorObject.show(2000,2000,10,100);
+			model.showModelWithTexture(0, 0, 0, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
+
+			// light objects
+			light.pointLight(-,6,-3, 0xffffff,0.5, 15);
+
+
+			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+	    ambientLight.position.set(0,10,0);
+			scene.add(ambientLight);
+
+		}
+
+		//------------------------------OBJECTS FUNCTIONS-----------------------\\
+
+		function createObjects() {
+			//instances
+			model = new Model();
+			floorObject = new FloorObject();
+			crateObject = new CrateObject();
+			light = new Light();
+
+			//objects
+			floorObject.show(2000,2000,10,100);
+			model.showModelWithTexture(0, 0, 0, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
+
+			// light objects
+			light.pointLight(-,6,-3, 0xffffff,0.5, 15);
+
+
+			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+			ambientLight.position.set(0,10,0);
+			scene.add(ambientLight);
+
+		}
+
+		//------------------------------CONTROLS FUNCTIONS------------------------\\
 		function controls() {
 			controls = new THREE.OrbitControls( camera );
 			controls.target.set( 0, 2, 0 );
@@ -135,17 +167,8 @@
 			controls.update();
 		}
 
-		// WINDOW RESIZE
-		function onWindowResize() {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-			renderer.setSize( window.innerWidth, window.innerHeight );
-		}
-
-
 		// ----------------------------------------------------------------\\
 	</script>
-
 
 	</body>
 </html>
