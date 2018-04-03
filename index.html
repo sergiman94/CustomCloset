@@ -33,20 +33,30 @@
     <script src="OBJLoader.js"></script>
 		<script src="OrbitControls.js"></script>
 		<script src="ammo.js"></script>
+		<script src="Reflector.js"></script>
+		<script src="Mirror.js"></script>
+		<script src="AxisHelper.js"></script>
+
 
 	<script>
+
+
+		//-----------------------------GLOBAL FUNCTIONS---------------------------\\
+
+		var axis;
+		var mirror;
+		var floorObject;
+		var container, stats;
+		var camera, controls, scene, renderer;
+		var ambientLight;
+		var WIDTH = window.innerWidth;
+		var HEIGHT = window.innerHeight;
+
 
 		//-----------------------------MAIN FUNCTIONS-----------------------------\\
 
 		init();
 		animate();
-
-		//-----------------------------GLOBAL FUNCTIONS---------------------------\\
-
-		var floorObject;
-		var container, stats;
-		var camera, controls, scene, renderer;
-		var ambientLight;
 
 		//-----------------------------INIT FUNCTIONS-----------------------------\\
 		function init(){
@@ -131,6 +141,10 @@
 			floorObject = new FloorObject();
 			crateObject = new CrateObject();
 			light = new Light();
+			mirror = new Mirror();
+			axis = new Axis();
+
+			axis.show(200);
 
 			//objects
 			floorObject.show(2000,2000,10,100);
@@ -143,6 +157,11 @@
 			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 	    ambientLight.position.set(0,10,0);
 			scene.add(ambientLight);
+
+			// mirror object
+			mirror.verticalMirror(100, 100, 50, - 20);
+
+
 
 		}
 
