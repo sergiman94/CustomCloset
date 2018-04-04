@@ -5,7 +5,7 @@ var y,z;
 function Mirror() {
 
 
-  this.verticalMirror = function (width, height, y, z) {
+  this.verticalMirror = function (width, height, x, y, z) {
 
     var geometry = new THREE.PlaneBufferGeometry( width, height );
     var verticalMirror = new THREE.Reflector( geometry, {
@@ -16,11 +16,13 @@ function Mirror() {
         recursion: 1
       } );
 
+      verticalMirror.position.x = x;
       verticalMirror.position.y = y;
       verticalMirror.position.z = z;
-      verticalMirror.position.y = Math.PI / 2
 
       scene.add( verticalMirror );
+
+      return verticalMirror;
 
   }
 

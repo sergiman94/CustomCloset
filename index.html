@@ -144,23 +144,27 @@
 			mirror = new Mirror();
 			axis = new Axis();
 
+			// X red, Y green, Z blue
 			axis.show(200);
 
 			//objects
 			floorObject.show(2000,2000,10,100);
-			model.showModelWithTexture(0, 0, 0, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
 
-			// light objects
+			//ship
+			model.showModelWithTexture(35, 0, 50, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
+
+			// pointLight
 			light.pointLight(-1,6,-3, 0xffffff,0.5, 15);
 
-
+			//HemisphereLight
 			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 	    ambientLight.position.set(0,10,0);
 			scene.add(ambientLight);
 
-			// mirror object
-			mirror.verticalMirror(100, 100, 50, - 20);
 
+			// mirror object
+			mirror.verticalMirror(100, 100, 50, 50, 0);
+			mirror.verticalMirror(100, 100, 0, 50, 50).rotateY(Math.PI / 2);
 
 
 		}
