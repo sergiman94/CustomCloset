@@ -10,11 +10,17 @@ function Light() {
 
   this.pointLight = function ( x,y,z, color, intensity, distance) {
     light = new THREE.PointLight(color, intensity, distance);
-  	light.position.set(x,y,z);
   	light.castShadow = true;
-  	light.shadow.camera.near = 0.1;
-  	light.shadow.camera.far = 25;
+  	light.receiveShadow = true;
   	scene.add(light);
+
+    var sphereSize = 1;
+    var pointLightHelper = new THREE.PointLightHelper( light, sphereSize );
+
+    scene.add( pointLightHelper );
+
+    return light;
+
   }
 
   this.hemisphereLight = function () {

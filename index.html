@@ -20,22 +20,20 @@
 	<body>
 
 	<div id="container"><br /><br /><br /><br /><br /></div>
-		<script src="floorObject.js"></script>
-		<script src="light.js"></script>
-		<script src="Model.js"></script>
-		<script src="stats.min.js"></script>
-		<script src="crateObject.js"></script>
-
-
-		<script src="three.js"></script>
-    <script src="DDSLoader.js"></script>
-    <script src="MTLLoader.js"></script>
-    <script src="OBJLoader.js"></script>
-		<script src="OrbitControls.js"></script>
-		<script src="ammo.js"></script>
-		<script src="Reflector.js"></script>
-		<script src="Mirror.js"></script>
-		<script src="AxisHelper.js"></script>
+		<script src="MyFiles/floorObject.js"></script>
+		<script src="MyFiles/light.js"></script>
+		<script src="MyFiles/Model.js"></script>
+		<script src="ThreeFiles/stats.min.js"></script>
+		<script src="ThreeFiles/three.js"></script>
+    <script src="ThreeFiles/DDSLoader.js"></script>
+    <script src="ThreeFiles/MTLLoader.js"></script>
+    <script src="ThreeFiles/OBJLoader.js"></script>
+		<script src="ThreeFiles/OrbitControls.js"></script>
+		<script src="ThreeFiles/ammo.js"></script>
+		<script src="ThreeFiles/Reflector.js"></script>
+		<script src="MyFiles/Mirror.js"></script>
+		<script src="MyFiles/AxisHelper.js"></script>
+		<script src="MyFiles/MYOBjects.js"></script>
 
 
 	<script>
@@ -43,6 +41,7 @@
 
 		//-----------------------------GLOBAL FUNCTIONS---------------------------\\
 
+		var myObjects;
 		var axis;
 		var mirror;
 		var floorObject;
@@ -139,10 +138,10 @@
 			//instances
 			model = new Model();
 			floorObject = new FloorObject();
-			crateObject = new CrateObject();
 			light = new Light();
 			mirror = new Mirror();
 			axis = new Axis();
+			myObjects = new MYObjects();
 
 			// X red, Y green, Z blue
 			axis.show(200);
@@ -154,22 +153,32 @@
 			model.showModelWithTexture(35, 0, 50, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
 
 			// pointLight
-			light.pointLight(-1,6,-3, 0xffffff,0.5, 15);
+			var light1 = light.pointLight();
+			light1.position.set(35,20,50);
+			light1.intensity = 1;
+			light1.distance = 500;
 
-			//HemisphereLight
+			//AmbientLight
 			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 	    ambientLight.position.set(0,10,0);
+			ambientLight.intensity = 0.5;
 			scene.add(ambientLight);
-
 
 			// mirror object
 			mirror.verticalMirror(100, 100, 50, 50, 0);
 			mirror.verticalMirror(100, 100, 0, 50, 50).rotateY(Math.PI / 2);
 
+			// behind mirrror objects
+			mirror.verticalMirror(100, 100, -2, 50, 50).rotateY(4.7);
+			mirror.verticalMirror(100, 100, 50, 50, -2).rotateY(Math.PI);
+
+
+
+
 
 		}
 
-		// ----------------------------------------------------------------\\
+		//-----------------------------------------------------------------------\\
 	</script>
 
 

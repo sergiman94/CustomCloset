@@ -23,14 +23,8 @@ function Model() {
   			mesh.position.x = x;
         mesh.position.y = y;
         mesh.position.z = z;
-  			//mesh.rotation.y = -Math.PI/rotate;
-
   		});
-
   	});
-
-
-
   }
 
   this.showModelWithoutTexture = function (x, y, z, rotate, modelObj) {
