@@ -46,9 +46,7 @@
 	<body>
 
 
-		<div id="menu"></div>
-
-
+	<div id="menu"></div>
 	<div id="container"><br /><br /><br /><br /><br /></div>
 		<script src="MyFiles/floorObject.js"></script>
 		<script src="MyFiles/light.js"></script>
@@ -64,8 +62,6 @@
 		<script src="MyFiles/Mirror.js"></script>
 		<script src="MyFiles/AxisHelper.js"></script>
 		<script src="MyFiles/MYOBjects.js"></script>
-
-
 	<script>
 
 
@@ -81,6 +77,7 @@
 		var WIDTH = window.innerWidth;
 		var HEIGHT = window.innerHeight;
 		var root;
+		var menu = document.getElementById('menu');
 
 		var OBJECTS = {
 
@@ -88,7 +85,7 @@
 			"WomenObjectContainer": "WomenObject.obj"
 		}
 
-		var menu = document.getElementById('menu');
+
 
 		//-----------------------------MAIN FUNCTIONS-----------------------------\\
 
@@ -130,6 +127,10 @@
 
 			//monitor performance
 			monitorPerformance();
+
+			//group
+			root = new THREE.Group();
+			scene.add(root);
 
 		}
 
@@ -190,7 +191,7 @@
 			floorObject.show(2000,2000,10,100);
 
 			//ship
-			model.showModelWithTexture(35, 0, 50, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
+			//model.showModelWithTexture(35, 0, 50, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
 
 			// pointLight
 			var light1 = light.pointLight();
@@ -212,20 +213,39 @@
 			mirror.verticalMirror(100, 100, -2, 50, 50).rotateY(4.7);
 			mirror.verticalMirror(100, 100, 50, 50, -2).rotateY(Math.PI);
 
+			//
+			model.showModelWithoutTexture(35, 0, 50, 5, "models/ManObject.obj");
+
 		}
 
 		//---------------------------INTERACTION FUNCTIONS------------------------\\
 
 		function generateButtonCallBack( url ) {
 
+			var group = new THREE.Group();
+
+			scene.add(group);
+
+			while (group.children.length > 0){
+				var object = root.children[0];
+				object.parent.remove(object);
+			}
+
 			modell = new Model();
 
 			return function ( event ) {
-				modell.showModelWithoutTexture(0, 0, 0, 1, url);
+				modell.showModelWithoutTexture(35, 0, 50, 5, url);
+
+				//scene.children.pop();
+
 			}
+
+
+
 		}
 
 		function createMenu() {
+
 
 			for (var m in OBJECTS) {
 
@@ -238,9 +258,13 @@
 
 				button.addEventListener('click', generateButtonCallBack(url), false);
 
+
+
 			}
 
+
 		}
+
 
 
 		//-----------------------------------------------------------------------\\

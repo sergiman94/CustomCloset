@@ -1,6 +1,7 @@
 
 var mixer;
 
+
 function Model() {
 
   this.showModelWithTexture = function (x, y, z, rotate, modelMtl, modelObj) {
@@ -27,7 +28,16 @@ function Model() {
   	});
   }
 
+
+
   this.showModelWithoutTexture = function (x, y, z, rotate, modelObj) {
+
+    while (root.children.length > 0){
+
+      var object = root.children[0];
+      object.parent.remove( object );
+    }
+
     var objLoader = new THREE.OBJLoader();
   	objLoader.load(modelObj, function(mesh){
 
@@ -38,10 +48,14 @@ function Model() {
   			}
   		});
 
-  		scene.add(mesh);
   		mesh.position.set(x, y, z);
   		mesh.rotation.y = -Math.PI/rotate;
+
+      root.add( mesh );
+
   	});
+
+
   }
 
   this.modelLoadWithJSON = function (x, y, z, rotate, jsonModel) {
