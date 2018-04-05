@@ -6,18 +6,48 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
 			body {
+
 				color: #61443e;
 				font-family:Monospace;
 				font-size:13px;
 				text-align:center;
 				background-color: #bfd1e5;
-				margin: 0px;
+				padding: 0;
+				margin: 0;
 				overflow: hidden;
 			}
+
+			#menu {
+				position: absolute;
+				bottom: 20px;
+				width: 100%;
+				text-align: center;
+				padding: 0;
+				margin: 0;
+			}
+			button {
+				color: rgb(255,255,255);
+				background: transparent;
+				border: 0px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			button:hover {
+				background-color: rgba(0,255,255,0.5);
+			}
+			button:active {
+				color: #000000;
+				background-color: rgba(0,255,255,1);
+			}
+
 		</style>
 
 	</head>
 	<body>
+
+
+		<div id="menu"></div>
+
 
 	<div id="container"><br /><br /><br /><br /><br /></div>
 		<script src="MyFiles/floorObject.js"></script>
@@ -39,7 +69,7 @@
 	<script>
 
 
-		//-----------------------------GLOBAL FUNCTIONS---------------------------\\
+		//-----------------------------GLOBAL VARIABLES---------------------------\\
 
 		var myObjects;
 		var axis;
@@ -50,7 +80,15 @@
 		var ambientLight;
 		var WIDTH = window.innerWidth;
 		var HEIGHT = window.innerHeight;
+		var root;
 
+		var OBJECTS = {
+
+			"ManObjectContainer": "ManObject.obj",
+			"WomenObjectContainer": "WomenObject.obj"
+		}
+
+		var menu = document.getElementById('menu');
 
 		//-----------------------------MAIN FUNCTIONS-----------------------------\\
 
@@ -63,6 +101,8 @@
 			initGraphics();
 
 			createObjects();
+
+			createMenu();
 
 		}
 
@@ -93,7 +133,7 @@
 
 		}
 
-		//-----------------------------IMOORTANT FUNCTIONS------------------------\\
+		//-----------------------------IMPORTANT FUNCTIONS------------------------\\
 
 		function animate(){
 			requestAnimationFrame(animate);
@@ -172,11 +212,36 @@
 			mirror.verticalMirror(100, 100, -2, 50, 50).rotateY(4.7);
 			mirror.verticalMirror(100, 100, 50, 50, -2).rotateY(Math.PI);
 
+		}
 
+		//---------------------------INTERACTION FUNCTIONS------------------------\\
 
+		function generateButtonCallBack( url ) {
 
+			modell = new Model();
+
+			return function ( event ) {
+				modell.showModelWithoutTexture(0, 0, 0, 1, url);
+			}
+		}
+
+		function createMenu() {
+
+			for (var m in OBJECTS) {
+
+				var button = document.createElement('button');
+				button.innerHTML = m;
+
+				menu.appendChild(button);
+
+				var url = 'models/' + OBJECTS[m];
+
+				button.addEventListener('click', generateButtonCallBack(url), false);
+
+			}
 
 		}
+
 
 		//-----------------------------------------------------------------------\\
 	</script>
