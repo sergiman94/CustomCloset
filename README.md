@@ -21,4 +21,6 @@ Open the index.html file only with google chrome
 * Now in the scene there're 4 mirrors, 2 of them are according the X and Z axes respectevely,
   and the other 2 are behind themm, new modification for the pointLight and ambienLight about
   distance, color and intensity. the Pirateship object is between the mirrors in order to test
-  their reflection, OrbitControls still normal. 
+  their reflection, OrbitControls still normal.
+
+* There are buttons to load a 3D model into the scene
