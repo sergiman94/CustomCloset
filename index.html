@@ -114,7 +114,7 @@
 			scene = new THREE.Scene();
 			scene.background = new THREE.Color( 0xbfd1e5 );
 			scene.fog = new THREE.Fog( 0xE6E6E6, 0, 750 );
-			camera.position.set( 0, 15, 30);
+			camera.position.set( 107, 93, 106);
 
 			//Orbit controls
 			controls();
@@ -180,6 +180,7 @@
 			model = new Model();
 			floorObject = new FloorObject();
 			light = new Light();
+			light2 = new Light();
 			mirror = new Mirror();
 			axis = new Axis();
 			myObjects = new MYObjects();
@@ -193,11 +194,12 @@
 			//ship
 			//model.showModelWithTexture(35, 0, 50, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
 
-			// pointLight
-			var light1 = light.pointLight();
-			light1.position.set(35,20,50);
-			light1.intensity = 1;
-			light1.distance = 500;
+			//Lights
+			spotLight = light.spotLight();
+
+			pointLight = light2.pointLight();
+			pointLight.position.set(50,150,10);
+			pointLight.distance = 310;
 
 			//AmbientLight
 			ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -214,7 +216,7 @@
 			mirror.verticalMirror(100, 100, 50, 50, -2).rotateY(Math.PI);
 
 			//
-			model.showModelWithoutTexture(35, 0, 50, 5, "models/ManObject.obj");
+			model.showModelWithoutTexture(45, 0, 50, 13, "models/ManObject.obj");
 
 		}
 
@@ -222,25 +224,11 @@
 
 		function generateButtonCallBack( url ) {
 
-			var group = new THREE.Group();
-
-			scene.add(group);
-
-			while (group.children.length > 0){
-				var object = root.children[0];
-				object.parent.remove(object);
-			}
-
 			modell = new Model();
 
 			return function ( event ) {
-				modell.showModelWithoutTexture(35, 0, 50, 5, url);
-
-				//scene.children.pop();
-
+				modell.showModelWithoutTexture(45, 0, 50, 13, url);
 			}
-
-
 
 		}
 

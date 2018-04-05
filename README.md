@@ -24,3 +24,4 @@ Open the index.html file only with google chrome
   their reflection, OrbitControls still normal.
 
 * There are buttons to load a 3D model into the scene
+* new spotLight into the scene

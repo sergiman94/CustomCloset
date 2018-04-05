@@ -49,7 +49,8 @@ function Model() {
   		});
 
   		mesh.position.set(x, y, z);
-  		mesh.rotation.y = -Math.PI/rotate;
+  		mesh.rotation.y = Math.PI/rotate;
+      mesh.scale.set(0.5,0.5,0.5);
 
       root.add( mesh );
 
