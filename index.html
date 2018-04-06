@@ -19,6 +19,14 @@
 
 			#menu {
 				position: absolute;
+				top: 20px;
+				width: 100%;
+				text-align: center;
+				padding: 0;
+				margin: 0;
+			}
+			#materials {
+				position: absolute;
 				bottom: 20px;
 				width: 100%;
 				text-align: center;
@@ -44,9 +52,8 @@
 
 	</head>
 	<body>
-
-
 	<div id="menu"></div>
+	<div id="materials"></div>
 	<div id="container"><br /><br /><br /><br /><br /></div>
 		<script src="MyFiles/floorObject.js"></script>
 		<script src="MyFiles/light.js"></script>
@@ -77,14 +84,23 @@
 		var WIDTH = window.innerWidth;
 		var HEIGHT = window.innerHeight;
 		var root;
-		var menu = document.getElementById('menu');
+		var menuContainer = document.getElementById('menu');
+		var materialContainer = document.getElementById('materials');
+
+		var materiall = new THREE.MeshLambertMaterial({ color: 0xff6600, combine: THREE.MixOperation, reflectivity: 0.3 });
+
+		var MATERIALS = {
+
+			"orange": new THREE.MeshLambertMaterial({color: 0xff6600, combine: THREE.MixOperation, reflectivity: 0.3}),
+			"blue": new THREE.MeshLambertMaterial({color: 0x001133, combine: THREE.MixOpertation, reflectivity: 0.3})
+
+		}
 
 		var OBJECTS = {
 
 			"ManObjectContainer": "ManObject.obj",
 			"WomenObjectContainer": "WomenObject.obj"
 		}
-
 
 
 		//-----------------------------MAIN FUNCTIONS-----------------------------\\
@@ -216,21 +232,51 @@
 			mirror.verticalMirror(100, 100, 50, 50, -2).rotateY(Math.PI);
 
 			//
-			model.showModelWithoutTexture(45, 0, 50, 13, "models/ManObject.obj");
+			model.OBJModelWithoutTexture(45, 0, 50, 13, "models/ManObject.obj", materiall);
 
 		}
 
 		//---------------------------INTERACTION FUNCTIONS------------------------\\
 
-		function generateButtonCallBack( url ) {
+		function generateModelButtonCallBack( url ) {
 
 			modell = new Model();
 
 			return function ( event ) {
-				modell.showModelWithoutTexture(45, 0, 50, 13, url);
+				modell.OBJModelWithoutTexture(45, 0, 50, 13, url);
 			}
 
 		}
+
+		function ModelMaterialButtonCallBack( mat) {
+
+			modell = new Model();
+
+			return function ( event ) {
+
+				for(var i in OBJECTS){
+
+					var url = "models/"+ OBJECTS[i];
+					modell.OBJModelWithTexture(45, 0, 50, 13, url, mat);
+					break;
+				}
+
+				// while (i != objectsLength ){
+				//
+				// 	var url = "models/"+ OBJECTS[i];
+				// 	modell.OBJModelWithTexture(45, 0, 50, 13, url, mat);
+				//
+				// 	i++;
+				//
+				// }
+
+
+			}
+
+		}
+
+
+
 
 		function createMenu() {
 
@@ -240,18 +286,35 @@
 				var button = document.createElement('button');
 				button.innerHTML = m;
 
-				menu.appendChild(button);
+				menuContainer.appendChild(button);
 
 				var url = 'models/' + OBJECTS[m];
 
-				button.addEventListener('click', generateButtonCallBack(url), false);
-
+				button.addEventListener('click', generateModelButtonCallBack(url, false));
 
 
 			}
 
 
+				for(var i in MATERIALS){
+
+					var button2 = document.createElement('button');
+
+					button2.innerHTML = i;
+
+					materialContainer.appendChild(button2);
+
+
+					var materialB = MATERIALS[i];
+
+					 button2.addEventListener('click', ModelMaterialButtonCallBack( materialB), false);
+
+				}
+
+
+
 		}
+
 
 
 

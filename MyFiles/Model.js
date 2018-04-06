@@ -30,7 +30,7 @@ function Model() {
 
 
 
-  this.showModelWithoutTexture = function (x, y, z, rotate, modelObj) {
+  this.OBJModelWithoutTexture = function (x, y, z, rotate, modelObj) {
 
     while (root.children.length > 0){
 
@@ -38,8 +38,12 @@ function Model() {
       object.parent.remove( object );
     }
 
+
+
     var objLoader = new THREE.OBJLoader();
   	objLoader.load(modelObj, function(mesh){
+
+
 
   		mesh.traverse(function(node){
   			if( node instanceof THREE.Mesh ){
@@ -56,6 +60,37 @@ function Model() {
 
   	});
 
+  }
+
+  this.OBJModelWithTexture = function (x, y, z, rotate, modelObj, material) {
+
+    while (root.children.length > 0){
+
+      var object = root.children[0];
+      object.parent.remove( object );
+    }
+
+
+
+    var objLoader = new THREE.OBJLoader();
+  	objLoader.load(modelObj, function(mesh){
+
+
+  		mesh.traverse(function(node){
+  			if( node instanceof THREE.Mesh ){
+  				node.castShadow = true;
+  				node.receiveShadow = true;
+          node.material = material
+  			}
+  		});
+
+  		mesh.position.set(x, y, z);
+  		mesh.rotation.y = Math.PI/rotate;
+      mesh.scale.set(0.5,0.5,0.5);
+
+      root.add( mesh );
+
+  	});
 
   }
 
