@@ -238,6 +238,12 @@
 
 		//---------------------------INTERACTION FUNCTIONS------------------------\\
 
+		function modelName() {
+			var name = scene.children[0].children[0].children[0].name
+
+			return name;
+		}
+
 		function generateModelButtonCallBack( url ) {
 
 			modell = new Model();
@@ -248,35 +254,44 @@
 
 		}
 
-		function ModelMaterialButtonCallBack( mat) {
+		function ModelMaterialButtonCallBack( mat ) {
 
 			modell = new Model();
 
 			return function ( event ) {
 
-				for(var i in OBJECTS){
 
-					var url = "models/"+ OBJECTS[i];
-					modell.OBJModelWithTexture(45, 0, 50, 13, url, mat);
-					break;
+
+				var name = modelName();
+
+				var url1 = "models/"+ "ManObject.obj";
+				var url2 = "models/"+ "WomenObject.obj";
+
+
+				if ( name  == "man_body") {
+					console.log(name);
+
+					modell.OBJModelWithTexture(45, 0, 50, 13, url1, mat);
+
+				}else  if (name == "girl_body"){
+
+					console.log(name);
+
+					modell.OBJModelWithTexture(45, 0, 50, 13, url2, mat);
 				}
 
-				// while (i != objectsLength ){
-				//
-				// 	var url = "models/"+ OBJECTS[i];
-				// 	modell.OBJModelWithTexture(45, 0, 50, 13, url, mat);
-				//
-				// 	i++;
-				//
-				// }
 
+				// for(var i in OBJECTS){
+
+				// var url = "models/"+ OBJECTS[i];
+				// var model = modell.OBJModelWithTexture(45, 0, 50, 13, url, mat);
+				//break;
+
+				// }
 
 			}
 
 		}
-
-
-
 
 		function createMenu() {
 

@@ -28,8 +28,6 @@ function Model() {
   	});
   }
 
-
-
   this.OBJModelWithoutTexture = function (x, y, z, rotate, modelObj) {
 
     while (root.children.length > 0){
