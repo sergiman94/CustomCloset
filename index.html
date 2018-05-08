@@ -54,6 +54,7 @@
 	<body>
 	<div id="menu"></div>
 	<div id="materials"></div>
+	<div id="budget"></div>
 	<div id="container"><br /><br /><br /><br /><br /></div>
 		<script src="MyFiles/floorObject.js"></script>
 		<script src="MyFiles/light.js"></script>
@@ -69,11 +70,13 @@
 		<script src="MyFiles/Mirror.js"></script>
 		<script src="MyFiles/AxisHelper.js"></script>
 		<script src="MyFiles/MYOBjects.js"></script>
+		<script src="ThreeFiles/dat.gui.min.js"></script>
 	<script>
 
 
 		//-----------------------------GLOBAL VARIABLES---------------------------\\
 
+		var current_material, effectController;
 		var myObjects;
 		var axis;
 		var mirror;
@@ -84,12 +87,14 @@
 		var WIDTH = window.innerWidth;
 		var HEIGHT = window.innerHeight;
 		var root;
+
+		var budgetContainer = document.getElementById('budget');
 		var menuContainer = document.getElementById('menu');
 		var materialContainer = document.getElementById('materials');
 
 		var materiall = new THREE.MeshLambertMaterial({ color: 0xff6600, combine: THREE.MixOperation, reflectivity: 0.3 });
 
-		var MATERIALS = {
+		var MATERIALSS= {
 
 			"orange": new THREE.MeshLambertMaterial({color: 0xff6600, combine: THREE.MixOperation, reflectivity: 0.3}),
 			"blue": new THREE.MeshLambertMaterial({color: 0x001133, combine: THREE.MixOpertation, reflectivity: 0.3})
@@ -98,9 +103,18 @@
 
 		var OBJECTS = {
 
-			"ManObjectContainer": "ManObject.obj",
-			"WomenObjectContainer": "WomenObject.obj"
+			"ManObjectContainer": "man.obj",
+			"WomenObjectContainer": "woman.obj"
 		}
+
+		//instances
+		model = new Model();
+		floorObject = new FloorObject();
+		light = new Light();
+		light2 = new Light();
+		mirror = new Mirror();
+		axis = new Axis();
+		myObjects = new MYObjects();
 
 
 		//-----------------------------MAIN FUNCTIONS-----------------------------\\
@@ -116,6 +130,8 @@
 			createObjects();
 
 			createMenu();
+
+			setupGui();
 
 		}
 
@@ -192,14 +208,7 @@
 		//-----------------------------OBJECTS FUNCTIONS--------------------------\\
 
 		function createObjects() {
-			//instances
-			model = new Model();
-			floorObject = new FloorObject();
-			light = new Light();
-			light2 = new Light();
-			mirror = new Mirror();
-			axis = new Axis();
-			myObjects = new MYObjects();
+		
 
 			// X red, Y green, Z blue
 			axis.show(200);
@@ -232,11 +241,32 @@
 			mirror.verticalMirror(100, 100, 50, 50, -2).rotateY(Math.PI);
 
 			//
-			model.OBJModelWithoutTexture(45, 0, 50, 13, "models/ManObject.obj", materiall);
+			model.OBJModelWithoutTexture(45, 0, 50, 13, "models/man.obj");
 
 		}
 
-		//---------------------------INTERACTION FUNCTIONS------------------------\\
+		function generateMaterials() {
+
+			var materials = {
+
+				"orange":
+				{
+					m: new THREE.MeshPhongMaterial({color: 0xff6600, combine: THREE.MixOperation, reflectivity: 0.3}),
+					h: 0, s: 0, l: 1
+				},
+
+				"blue":
+				{
+					m: new THREE.MeshPhongMaterial({color: 0x001133, combine: THREE.MixOpertation, reflectivity: 0.3}),
+					h: 0, s: 0, l: 1
+				}
+			};
+
+			return materials;
+
+			}
+
+		//---------------------------GENERAL MENU FUNCTIONS------------------------\\
 
 		function modelName() {
 			var name = scene.children[0].children[0].children[0].name
@@ -260,36 +290,31 @@
 
 			return function ( event ) {
 
-
-
 				var name = modelName();
 
-				var url1 = "models/"+ "ManObject.obj";
-				var url2 = "models/"+ "WomenObject.obj";
+				var url1 = "models/"+ "man.obj";
+				var url2 = "models/"+ "woman.obj";
 
 
-				if ( name  == "man_body") {
+				if ( name  == "man") {
 					console.log(name);
 
 					modell.OBJModelWithTexture(45, 0, 50, 13, url1, mat);
 
-				}else  if (name == "girl_body"){
+				}else  if (name == "Form0"){
 
 					console.log(name);
 
 					modell.OBJModelWithTexture(45, 0, 50, 13, url2, mat);
+				}else{
+					console.log(name);
 				}
 
-
-				// for(var i in OBJECTS){
-
-				// var url = "models/"+ OBJECTS[i];
-				// var model = modell.OBJModelWithTexture(45, 0, 50, 13, url, mat);
-				//break;
-
-				// }
-
 			}
+
+		}
+
+		function getModel(modelPath){
 
 		}
 
@@ -310,28 +335,89 @@
 
 			}
 
-
-				for(var i in MATERIALS){
-
-					var button2 = document.createElement('button');
-
-					button2.innerHTML = i;
-
-					materialContainer.appendChild(button2);
-
-
-					var materialB = MATERIALS[i];
-
-					 button2.addEventListener('click', ModelMaterialButtonCallBack( materialB), false);
-
-				}
-
-
+			// for(var i in MATERIALSS){
+			//
+			// 	var button2 = document.createElement('button');
+			//
+			// 	button2.innerHTML = i;
+			//
+			// 	materialContainer.appendChild(button2);
+			//
+			// 	var materialB = MATERIALSS[i];
+			//
+			// 		button2.addEventListener('click', ModelMaterialButtonCallBack( materialB), false);
+			//
+			// }
 
 		}
 
+		//---------------------------GUI CUSTOMIZABLE CONTROLS---------------------\\
+
+		function setupGui(){
+
+			var materials = generateMaterials();
+
+			var h, m_h, m_s, m_l;
+
+			var createHandler = function (id) {
+
+				return function () {
+
+					var mat_old = materials[current_material];
+					mat_old.h = m_h.getValue();
+					mat_old.s = m_s.getValue();
+					mat_old.l = m_l.getValue();
+
+					current_material = id;
+
+					var mat = materials[id];
+					//objeto.material = mat.m
+
+					m_h.setValue(mat.h);
+					m_s.setValue(mat.s);
+					m_l.setValue(mat.l);
+				}
+
+			}
 
 
+			effectController = {
+
+			material: "shiny",
+			speed: 1.0,
+			numBlobs: 10,
+			resolution: 28,
+			isolation: 80,
+			floor: true,
+			wallx: false,
+			wallz: false,
+			hue: 0.0,
+			saturation: 0.8,
+			lightness: 0.1,
+			lhue: 0.04,
+			lsaturation: 1.0,
+			llightness: 0.5,
+			lx: 0.5,
+			ly: 0.5,
+			lz: 1.0,
+			postprocessing: false,
+
+			dummy: function() {
+			}
+
+			};
+
+			var gui = new dat.GUI();
+
+			h = gui.addFolder("Materials");
+
+			for (var m in materials){
+				effectController[m] = createHandler(m)
+				h.add(effectController, m).name(m).listen();
+			}
+
+
+		}
 
 		//-----------------------------------------------------------------------\\
 	</script>

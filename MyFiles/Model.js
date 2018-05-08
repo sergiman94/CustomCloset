@@ -37,7 +37,6 @@ function Model() {
     }
 
 
-
     var objLoader = new THREE.OBJLoader();
   	objLoader.load(modelObj, function(mesh){
 
@@ -52,11 +51,13 @@ function Model() {
 
   		mesh.position.set(x, y, z);
   		mesh.rotation.y = Math.PI/rotate;
-      mesh.scale.set(0.5,0.5,0.5);
+      mesh.scale.set(0.5, 0.5, 0.5);
 
       root.add( mesh );
 
   	});
+
+
 
   }
 
