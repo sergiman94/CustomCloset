@@ -55,6 +55,7 @@
 	<div id="menu"></div>
 	<div id="materials"></div>
 	<div id="budget"></div>
+
 	<div id="container"><br /><br /><br /><br /><br /></div>
 		<script src="MyFiles/floorObject.js"></script>
 		<script src="MyFiles/light.js"></script>
@@ -87,6 +88,12 @@
 		var WIDTH = window.innerWidth;
 		var HEIGHT = window.innerHeight;
 		var root;
+		var mesh, materialStandard, materialDepthBasic, materialDepthRGBA, materialNormal;
+		var height = 500; // of camera frustum
+		var SCALE = 2.436143; // from original model
+		var BIAS = - 0.428408; // from original model
+
+		textureLoader = new THREE.TextureLoader();
 
 		var budgetContainer = document.getElementById('budget');
 		var menuContainer = document.getElementById('menu');
@@ -107,6 +114,10 @@
 			"WomenObjectContainer": "woman.obj"
 		}
 
+		var params = {
+				material: 'normal'
+		};
+
 		//instances
 		model = new Model();
 		floorObject = new FloorObject();
@@ -122,6 +133,7 @@
 		init();
 		animate();
 
+
 		//-----------------------------INIT FUNCTIONS-----------------------------\\
 		function init(){
 
@@ -129,15 +141,32 @@
 
 			createObjects();
 
-			createMenu();
+			//createMenu();
 
-			setupGui();
+			initGUI();
 
 		}
 
+		//---------------------------GUI CUSTOMIZABLE CONTROLS---------------------\\
+
+		function initGUI() {
+			var gui = new dat.GUI();
+			var f = gui.addFolder("materials");
+			f.add( params, 'material', [ 'standard', 'normal', 'depthBasic', 'depthRGBA' ]);
+
+
+		}
+
+		//-----------------------------IMPORTANT FUNCTIONS------------------------\\
+
 		function initGraphics() {
 
-			textureLoader = new THREE.TextureLoader();
+			renderer = new THREE.WebGLRenderer();
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.shadowMap.enabled = true;
+
+
 
 			container = document.getElementById( 'container' );
 
@@ -164,22 +193,113 @@
 			root = new THREE.Group();
 			scene.add(root);
 
-		}
+			//model.OBJModelWithoutTexture(45, 0, 50, 13, "models/man.obj");
 
-		//-----------------------------IMPORTANT FUNCTIONS------------------------\\
+
+			///-----------------------------------------------------------------------
+
+			// textures
+			//var textureLoader = new THREE.TextureLoader();
+
+
+			var normalMap = textureLoader.load( "models/Ninja/normal.jpg" );
+			var aoMap = textureLoader.load( "models/Ninja/ao.jpg" );
+			var displacementMap = textureLoader.load( "models/Ninja/displacement.jpg" );
+
+	    // material
+			materialStandard = new THREE.MeshStandardMaterial( {
+				color: 0xffffff,
+				metalness: 0.5,
+				roughness: 0.6,
+				//displacementMap: displacementMap,
+				displacementScale: SCALE,
+				displacementBias: BIAS,
+				aoMap: aoMap,
+				normalMap: normalMap,
+				normalScale: new THREE.Vector2( 1, - 1 ),
+				//flatShading: true,
+				side: THREE.DoubleSide
+			} );
+
+			materialDepthBasic = new THREE.MeshDepthMaterial( {
+				depthPacking: THREE.BasicDepthPacking,
+				displacementMap: displacementMap,
+				displacementScale: SCALE,
+				displacementBias: BIAS,
+				side: THREE.DoubleSide
+			} );
+
+			materialDepthRGBA = new THREE.MeshDepthMaterial( {
+				depthPacking: THREE.RGBADepthPacking,
+				displacementMap: displacementMap,
+				displacementScale: SCALE,
+				displacementBias: BIAS,
+				side: THREE.DoubleSide
+			} );
+
+			materialNormal = new THREE.MeshNormalMaterial( {
+				displacementMap: displacementMap,
+				displacementScale: SCALE,
+				displacementBias: BIAS,
+				normalMap: normalMap,
+				normalScale: new THREE.Vector2( 1, - 1 ),
+				//flatShading: true,
+				side: THREE.DoubleSide
+			} );
+
+
+	    //------ OBJ LOADER ------- \\
+	    var objLoader = new THREE.OBJLoader();
+	    objLoader.load("models/man.obj", function(group){
+
+	      var geometry = group.children[ 0 ].geometry;
+				geometry.attributes.uv2 = geometry.attributes.uv;
+				//geometry.center();
+
+	      mesh = new THREE.Mesh( geometry, materialNormal );
+
+				mesh.scale.multiplyScalar( 0.5 );
+				mesh.position.set(45,0,50);
+				mesh.rotation.y = Math.PI / 4;
+				scene.add( mesh );
+
+
+	  	});
+
+		}
 
 		function animate(){
 			requestAnimationFrame(animate);
 
-			renderer.render(scene, camera);
+			render();
+
 			stats.update();
+
 		}
 
 		function render() {
-			renderer = new THREE.WebGLRenderer();
-			renderer.setPixelRatio( window.devicePixelRatio );
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			renderer.shadowMap.enabled = true;
+
+
+			if(mesh){
+
+				var material = mesh.material;
+
+				switch ( params.material ) {
+
+					case 'standard': material = materialStandard; break;
+					case 'depthBasic': material = materialDepthBasic; break;
+					case 'depthRGBA': material = materialDepthRGBA; break;
+					case 'normal': material = materialNormal; break;
+				}
+
+				//material.needsUpdate = true;
+				mesh.material = material;
+
+			}
+
+			renderer.render(scene, camera);
+
+
 		}
 
 		function monitorPerformance() {
@@ -199,16 +319,17 @@
 		//-----------------------------CONTROLS FUNCTIONS-------------------------\\
 
 		function controls() {
-			controls = new THREE.OrbitControls( camera );
+			controls = new THREE.OrbitControls( camera , renderer.domElement);
 			controls.target.set( 0, 2, 0 );
 			controls.enableZoom = true;
 			controls.update();
+
 		}
 
 		//-----------------------------OBJECTS FUNCTIONS--------------------------\\
 
 		function createObjects() {
-		
+
 
 			// X red, Y green, Z blue
 			axis.show(200);
@@ -241,30 +362,15 @@
 			mirror.verticalMirror(100, 100, 50, 50, -2).rotateY(Math.PI);
 
 			//
-			model.OBJModelWithoutTexture(45, 0, 50, 13, "models/man.obj");
+
+			//model.OBJModelWithoutTexture(45, 0, 50, 13, "models/man.obj");
+			//model.showModelWithTexture(45, 0, 50, 13, "models/pirateship.mtl", "models/man.obj");
+
+
+
 
 		}
 
-		function generateMaterials() {
-
-			var materials = {
-
-				"orange":
-				{
-					m: new THREE.MeshPhongMaterial({color: 0xff6600, combine: THREE.MixOperation, reflectivity: 0.3}),
-					h: 0, s: 0, l: 1
-				},
-
-				"blue":
-				{
-					m: new THREE.MeshPhongMaterial({color: 0x001133, combine: THREE.MixOpertation, reflectivity: 0.3}),
-					h: 0, s: 0, l: 1
-				}
-			};
-
-			return materials;
-
-			}
 
 		//---------------------------GENERAL MENU FUNCTIONS------------------------\\
 
@@ -280,8 +386,8 @@
 
 			return function ( event ) {
 				modell.OBJModelWithoutTexture(45, 0, 50, 13, url);
-			}
 
+			}
 		}
 
 		function ModelMaterialButtonCallBack( mat ) {
@@ -311,10 +417,6 @@
 				}
 
 			}
-
-		}
-
-		function getModel(modelPath){
 
 		}
 
@@ -351,73 +453,6 @@
 
 		}
 
-		//---------------------------GUI CUSTOMIZABLE CONTROLS---------------------\\
-
-		function setupGui(){
-
-			var materials = generateMaterials();
-
-			var h, m_h, m_s, m_l;
-
-			var createHandler = function (id) {
-
-				return function () {
-
-					var mat_old = materials[current_material];
-					mat_old.h = m_h.getValue();
-					mat_old.s = m_s.getValue();
-					mat_old.l = m_l.getValue();
-
-					current_material = id;
-
-					var mat = materials[id];
-					//objeto.material = mat.m
-
-					m_h.setValue(mat.h);
-					m_s.setValue(mat.s);
-					m_l.setValue(mat.l);
-				}
-
-			}
-
-
-			effectController = {
-
-			material: "shiny",
-			speed: 1.0,
-			numBlobs: 10,
-			resolution: 28,
-			isolation: 80,
-			floor: true,
-			wallx: false,
-			wallz: false,
-			hue: 0.0,
-			saturation: 0.8,
-			lightness: 0.1,
-			lhue: 0.04,
-			lsaturation: 1.0,
-			llightness: 0.5,
-			lx: 0.5,
-			ly: 0.5,
-			lz: 1.0,
-			postprocessing: false,
-
-			dummy: function() {
-			}
-
-			};
-
-			var gui = new dat.GUI();
-
-			h = gui.addFolder("Materials");
-
-			for (var m in materials){
-				effectController[m] = createHandler(m)
-				h.add(effectController, m).name(m).listen();
-			}
-
-
-		}
 
 		//-----------------------------------------------------------------------\\
 	</script>

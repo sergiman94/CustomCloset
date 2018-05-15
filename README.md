@@ -18,10 +18,11 @@ Open the index.html file only with google chrome
 
 ## Acknowledgments
 
-* Now in the scene there're 4 mirrors, 2 of them are according the X and Z axes respectevely,
-  and the other 2 are behind themm, new modification for the pointLight and ambienLight about
-  distance, color and intensity. the Pirateship object is between the mirrors in order to test
+* In the scene there're 4 mirrors, 2 of them are according the X and Z axes respectevely,
+  and the other 2 are behind them, new modification for the pointLight and ambienLight about
+  distance, color and intensity. the .obj object is between the mirrors in order to test
   their reflection, OrbitControls still normal.
 
-* There are buttons to load a 3D model into the scene
-* new spotLight into the scene
+* New GUI changing the twxtures of the model
+* Working on the menu for male and female model
+* Code refactored (working now on that)
