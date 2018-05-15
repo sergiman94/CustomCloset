@@ -24,5 +24,5 @@ Open the index.html file only with google chrome
   their reflection, OrbitControls still normal.
 
 * New GUI changing the twxtures of the model
-* Working on the menu for male and female model
-* Code refactored (working now on that)
+* menu for male and female model is working now
+* Code refactored (still working now on that)

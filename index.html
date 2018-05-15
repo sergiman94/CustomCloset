@@ -89,11 +89,26 @@
 		var HEIGHT = window.innerHeight;
 		var root;
 		var mesh, materialStandard, materialDepthBasic, materialDepthRGBA, materialNormal;
-		var height = 500; // of camera frustum
-		var SCALE = 2.436143; // from original model
-		var BIAS = - 0.428408; // from original model
+		var height = 500;
+		var SCALE = 2.436143;
+		var BIAS = - 0.428408;
+
+		//instances
+		model = new Model();
+		floorObject = new FloorObject();
+		light = new Light();
+		light2 = new Light();
+		mirror = new Mirror();
+		axis = new Axis();
+		myObjects = new MYObjects();
 
 		textureLoader = new THREE.TextureLoader();
+
+		var normalMap = textureLoader.load( "models/Ninja/normal.jpg" );
+		var aoMap = textureLoader.load( "models/Ninja/ao.jpg" );
+		var displacementMap = textureLoader.load( "models/Ninja/displacement.jpg" );
+
+
 
 		var budgetContainer = document.getElementById('budget');
 		var menuContainer = document.getElementById('menu');
@@ -118,14 +133,7 @@
 				material: 'normal'
 		};
 
-		//instances
-		model = new Model();
-		floorObject = new FloorObject();
-		light = new Light();
-		light2 = new Light();
-		mirror = new Mirror();
-		axis = new Axis();
-		myObjects = new MYObjects();
+
 
 
 		//-----------------------------MAIN FUNCTIONS-----------------------------\\
@@ -141,7 +149,7 @@
 
 			createObjects();
 
-			//createMenu();
+			createMenu();
 
 			initGUI();
 
@@ -165,8 +173,6 @@
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			renderer.shadowMap.enabled = true;
-
-
 
 			container = document.getElementById( 'container' );
 
@@ -193,78 +199,20 @@
 			root = new THREE.Group();
 			scene.add(root);
 
-			//model.OBJModelWithoutTexture(45, 0, 50, 13, "models/man.obj");
+
+	    //---------- MATERIALS ---------------------- \\
+			materialStandard = standardMaterial();
+
+			materialDepthBasic = depthBasicMaterial();
+
+			materialDepthRGBA = depthRGBAMaterial();
+
+			materialNormal = normalMaterial();
 
 
-			///-----------------------------------------------------------------------
+	    // ---------  OBJ LOADER --------------------- \\
 
-			// textures
-			//var textureLoader = new THREE.TextureLoader();
-
-
-			var normalMap = textureLoader.load( "models/Ninja/normal.jpg" );
-			var aoMap = textureLoader.load( "models/Ninja/ao.jpg" );
-			var displacementMap = textureLoader.load( "models/Ninja/displacement.jpg" );
-
-	    // material
-			materialStandard = new THREE.MeshStandardMaterial( {
-				color: 0xffffff,
-				metalness: 0.5,
-				roughness: 0.6,
-				//displacementMap: displacementMap,
-				displacementScale: SCALE,
-				displacementBias: BIAS,
-				aoMap: aoMap,
-				normalMap: normalMap,
-				normalScale: new THREE.Vector2( 1, - 1 ),
-				//flatShading: true,
-				side: THREE.DoubleSide
-			} );
-
-			materialDepthBasic = new THREE.MeshDepthMaterial( {
-				depthPacking: THREE.BasicDepthPacking,
-				displacementMap: displacementMap,
-				displacementScale: SCALE,
-				displacementBias: BIAS,
-				side: THREE.DoubleSide
-			} );
-
-			materialDepthRGBA = new THREE.MeshDepthMaterial( {
-				depthPacking: THREE.RGBADepthPacking,
-				displacementMap: displacementMap,
-				displacementScale: SCALE,
-				displacementBias: BIAS,
-				side: THREE.DoubleSide
-			} );
-
-			materialNormal = new THREE.MeshNormalMaterial( {
-				displacementMap: displacementMap,
-				displacementScale: SCALE,
-				displacementBias: BIAS,
-				normalMap: normalMap,
-				normalScale: new THREE.Vector2( 1, - 1 ),
-				//flatShading: true,
-				side: THREE.DoubleSide
-			} );
-
-
-	    //------ OBJ LOADER ------- \\
-	    var objLoader = new THREE.OBJLoader();
-	    objLoader.load("models/man.obj", function(group){
-
-	      var geometry = group.children[ 0 ].geometry;
-				geometry.attributes.uv2 = geometry.attributes.uv;
-				//geometry.center();
-
-	      mesh = new THREE.Mesh( geometry, materialNormal );
-
-				mesh.scale.multiplyScalar( 0.5 );
-				mesh.position.set(45,0,50);
-				mesh.rotation.y = Math.PI / 4;
-				scene.add( mesh );
-
-
-	  	});
+			OBJLoader(45, 0, 50, "models/man.obj" );
 
 		}
 
@@ -376,7 +324,6 @@
 
 		function modelName() {
 			var name = scene.children[0].children[0].children[0].name
-
 			return name;
 		}
 
@@ -385,7 +332,9 @@
 			modell = new Model();
 
 			return function ( event ) {
-				modell.OBJModelWithoutTexture(45, 0, 50, 13, url);
+				//modell.OBJModelWithoutTexture(45, 0, 50, 13, url);
+
+				OBJLoader(45, 0, 50, url);
 
 			}
 		}
@@ -450,6 +399,107 @@
 			// 		button2.addEventListener('click', ModelMaterialButtonCallBack( materialB), false);
 			//
 			// }
+
+		}
+
+		//---------------------------MATERIALS FUNCTIONS--------------------------\\
+
+		function standardMaterial() {
+
+			var standardMaterial;
+			standardMaterial = new THREE.MeshStandardMaterial( {
+				color: 0xffffff,
+				metalness: 0.5,
+				roughness: 0.6,
+				//displacementMap: displacementMap,
+				displacementScale: SCALE,
+				displacementBias: BIAS,
+				aoMap: aoMap,
+				normalMap: normalMap,
+				normalScale: new THREE.Vector2( 1, - 1 ),
+				//flatShading: true,
+				side: THREE.DoubleSide
+			} );
+
+			return standardMaterial;
+
+		}
+
+		function depthBasicMaterial(){
+
+			var depthBasicMaterial;
+
+			depthBasicMaterial = new THREE.MeshDepthMaterial( {
+				depthPacking: THREE.BasicDepthPacking,
+				displacementMap: displacementMap,
+				displacementScale: SCALE,
+				displacementBias: BIAS,
+				side: THREE.DoubleSide
+			} );
+
+			return depthBasicMaterial;
+
+		}
+
+		function depthRGBAMaterial() {
+
+			var depthRGBAMaterial;
+
+			depthRGBAMaterial = new THREE.MeshDepthMaterial( {
+				depthPacking: THREE.RGBADepthPacking,
+				displacementMap: displacementMap,
+				displacementScale: SCALE,
+				displacementBias: BIAS,
+				side: THREE.DoubleSide
+			} );
+
+			return depthRGBAMaterial;
+
+		}
+
+		function normalMaterial(){
+
+			var normalMaterial;
+
+			normalMaterial =  new THREE.MeshNormalMaterial( {
+				displacementMap: displacementMap,
+				displacementScale: SCALE,
+				displacementBias: BIAS,
+				normalMap: normalMap,
+				normalScale: new THREE.Vector2( 1, - 1 ),
+				//flatShading: true,
+				side: THREE.DoubleSide
+			} );
+
+			return normalMaterial;
+
+		}
+
+		//---------------------------MODEL LOADER FUNCTIONS-----------------------\\
+
+		function OBJLoader(x, y , z, path){
+
+			while (root.children.length > 0){
+
+	      var object = root.children[0];
+	      object.parent.remove( object );
+	    }
+
+
+			var objLoader = new THREE.OBJLoader();
+			objLoader.load(path, function(group){
+
+				var geometry = group.children[ 0 ].geometry;
+				geometry.attributes.uv2 = geometry.attributes.uv;
+
+				mesh = new THREE.Mesh( geometry, materialNormal );
+
+				mesh.scale.multiplyScalar( 0.5 );
+				mesh.position.set(x, y, z);
+				mesh.rotation.y = Math.PI / 4;
+				root.add( mesh );
+				//scene.add( mesh );
+			});
 
 		}
 
