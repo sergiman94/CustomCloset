@@ -23,6 +23,7 @@ Open the index.html file only with google chrome
   distance, color and intensity. the .obj object is between the mirrors in order to test
   their reflection, OrbitControls still normal.
 
-* New GUI changing the twxtures of the model
+* New things on the GUI changing the textures of the model, boolean check for each outfit and a
+  budget restriction input
 * menu for male and female model is working now
 * Code refactored (still working now on that)

@@ -77,6 +77,10 @@
 
 		//-----------------------------GLOBAL VARIABLES---------------------------\\
 
+		var canRemove;
+		var beach, formal, casual;
+		var mesh2, mesh3;
+		var tmp;
 		var current_material, effectController;
 		var myObjects;
 		var axis;
@@ -92,8 +96,10 @@
 		var height = 500;
 		var SCALE = 2.436143;
 		var BIAS = - 0.428408;
+		var object;
+		var can = false;
 
-		//instances
+
 		model = new Model();
 		floorObject = new FloorObject();
 		light = new Light();
@@ -108,11 +114,8 @@
 		var aoMap = textureLoader.load( "models/Ninja/ao.jpg" );
 		var displacementMap = textureLoader.load( "models/Ninja/displacement.jpg" );
 
-
-
-		var budgetContainer = document.getElementById('budget');
 		var menuContainer = document.getElementById('menu');
-		var materialContainer = document.getElementById('materials');
+
 
 		var materiall = new THREE.MeshLambertMaterial({ color: 0xff6600, combine: THREE.MixOperation, reflectivity: 0.3 });
 
@@ -130,13 +133,21 @@
 		}
 
 		var params = {
-				material: 'normal'
+				Material: 'standard',
 		};
 
+		var params2 = {
+			Beach: false,
+			Formal: false,
+			Casual: false
+		};
+
+		var params3 = {
+			USD: 0
+		}
 
 
-
-		//-----------------------------MAIN FUNCTIONS-----------------------------\\
+		//-----------------------------MAIN CALL FUNCTIONS-----------------------------\\
 
 		init();
 		animate();
@@ -158,9 +169,27 @@
 		//---------------------------GUI CUSTOMIZABLE CONTROLS---------------------\\
 
 		function initGUI() {
+
 			var gui = new dat.GUI();
-			var f = gui.addFolder("materials");
-			f.add( params, 'material', [ 'standard', 'normal', 'depthBasic', 'depthRGBA' ]);
+
+			var bg = gui.addFolder("Budget");
+			bg.add(params3, 'USD');
+
+
+			var ma = gui.addFolder("Materials");
+			var ob = gui.addFolder("Outfits");
+
+			ma.add( params, 'Material', [ 'standard', 'normal', 'depthBasic', 'depthRGBA' ]);
+			beach = ob.add( params2, 'Beach');
+			formal = ob.add( params2, 'Formal');
+			casual = ob.add( params2, 'Casual');
+
+			bg.open();
+			ma.open();
+			ob.open();
+
+
+			//console.log(beach);
 
 
 		}
@@ -212,7 +241,9 @@
 
 	    // ---------  OBJ LOADER --------------------- \\
 
-			OBJLoader(45, 0, 50, "models/man.obj" );
+			//OBJLoader(45, 0, 50, "models/man.obj" );
+			model.OBJModelWithoutTexture(45, 0, 50, 4, "models/man.obj", materialStandard);
+
 
 		}
 
@@ -228,22 +259,101 @@
 		function render() {
 
 
-			if(mesh){
+			if(mesh && mesh2 && mesh3){
 
+				// Material change
 				var material = mesh.material;
+				var material2 = mesh2.material;
+				var material3 = mesh3.material;
 
-				switch ( params.material ) {
+				switch (params.Material) {
 
 					case 'standard': material = materialStandard; break;
 					case 'depthBasic': material = materialDepthBasic; break;
 					case 'depthRGBA': material = materialDepthRGBA; break;
 					case 'normal': material = materialNormal; break;
+
 				}
 
-				//material.needsUpdate = true;
+				switch (params.Material){
+
+					case 'standard': material2 = materialStandard; break;
+					case 'depthBasic': material2 = materialDepthBasic; break;
+					case 'depthRGBA': material2 = materialDepthRGBA; break;
+					case 'normal': material2 = materialNormal; break;
+
+				}
+
+				switch (params.Material){
+
+					case 'standard': material3 = materialStandard; break;
+					case 'depthBasic': material3 = materialDepthBasic; break;
+					case 'depthRGBA': material3 = materialDepthRGBA; break;
+					case 'normal': material3 = materialNormal; break;
+
+				}
+
+				mesh3.material = material3;
+				mesh2.material = material2;
 				mesh.material = material;
 
+				//----------------------------------------------------------------------
+
+				// Outfit selection
+				if (params2.Beach == true){
+					mesh.visible = true;
+					mesh2.visible = true;
+
+				} else if (params2.Formal == true){
+
+					mesh.visible = false;
+					mesh2.visible = false;
+
+					mesh3.visible = true;
+
+				}else{
+					mesh.visible = false;
+					mesh2.visible = false;
+
+					mesh3.visible = false;
+				}
+
+				//----------------------------------------------------------------------
+
+
+				//Customization
+				var budgUSD = params3.USD;
+
+
+
+				// USD
+				if (budgUSD >= 0 || budgEURO >= 0){
+
+					//Beach
+					if(budgUSD < 50){
+						beach.domElement.hidden = true;
+					}else if (budgUSD >= 50){
+						beach.domElement.hidden = false;
+					}
+
+					//Formal
+					if (budgUSD < 300 ){
+						formal.domElement.hidden = true;
+					}else if (budgUSD >= 300 ){
+						formal.domElement.hidden = false;
+					}
+
+
+				}
+
+
+
+
+
+
 			}
+
+
 
 			renderer.render(scene, camera);
 
@@ -285,8 +395,6 @@
 			//objects
 			floorObject.show(2000,2000,10,100);
 
-			//ship
-			//model.showModelWithTexture(35, 0, 50, 5, "models/Pirateship.mtl", "models/Pirateship.obj");
 
 			//Lights
 			spotLight = light.spotLight();
@@ -310,12 +418,17 @@
 			mirror.verticalMirror(100, 100, 50, 50, -2).rotateY(Math.PI);
 
 			//
-
 			//model.OBJModelWithoutTexture(45, 0, 50, 13, "models/man.obj");
-			//model.showModelWithTexture(45, 0, 50, 13, "models/pirateship.mtl", "models/man.obj");
 
 
 
+			//OBJLoader(41, 6, 46.5, "models/WorkoutShorts.OBJ", "shorts");
+			//customOBJLoader(44, 4.2, 48.8, "models/BetterShirt.obj", 15, "shirt");
+
+			//OUTFIT MODELS CALL
+
+			OBJLoaderOutfit("models/WorkoutShorts.OBJ","models/BetterShirt.obj", "Beach");
+			OBJLoaderOutfit("models/WorkoutShorts.OBJ","models/BetterShirt.obj", "Formal");
 
 		}
 
@@ -332,9 +445,9 @@
 			modell = new Model();
 
 			return function ( event ) {
-				//modell.OBJModelWithoutTexture(45, 0, 50, 13, url);
+				model.OBJModelWithoutTexture(45, 0, 50, 4, url,materialStandard);
 
-				OBJLoader(45, 0, 50, url);
+				//OBJLoader(45, 0, 50, url);
 
 			}
 		}
@@ -477,14 +590,13 @@
 
 		//---------------------------MODEL LOADER FUNCTIONS-----------------------\\
 
-		function OBJLoader(x, y , z, path){
+		function OBJLoader(x, y , z, path, name){
 
-			while (root.children.length > 0){
-
-	      var object = root.children[0];
-	      object.parent.remove( object );
-	    }
-
+			// while (root.children.length > 0){
+			//
+	    //   var object = root.children[0];
+	    //   object.parent.remove( object );
+	    // }
 
 			var objLoader = new THREE.OBJLoader();
 			objLoader.load(path, function(group){
@@ -497,9 +609,122 @@
 				mesh.scale.multiplyScalar( 0.5 );
 				mesh.position.set(x, y, z);
 				mesh.rotation.y = Math.PI / 4;
-				root.add( mesh );
-				//scene.add( mesh );
+				//root.add( mesh );
+				scene.add( mesh );
+
+				mesh.name = name;
+
+
+				//tmp = mesh;
+
+				//console.log(mesh.name);
+
+				//console.log(mesh);
+
 			});
+
+
+
+
+		}
+
+		function customOBJLoader(x, y, z, path, scalar, name ) {
+
+			// while (root.children.length > 0){
+			//
+			// 	var object = root.children[0];
+			// 	object.parent.remove( object );
+			// }
+
+
+			var objLoader = new THREE.OBJLoader();
+			objLoader.load(path, function(group){
+
+				var geometry = group.children[ 0 ].geometry;
+				geometry.attributes.uv2 = geometry.attributes.uv;
+
+				mesh = new THREE.Mesh( geometry, materialNormal );
+
+				mesh.scale.multiplyScalar( scalar );
+				mesh.position.set(x, y, z);
+				mesh.rotation.y = Math.PI / 4;
+				mesh.name = "shirt";
+
+				console.log(mesh.name);
+				//root.add( mesh );
+				scene.add( mesh );
+			});
+		}
+
+		function OBJLoaderOutfit( path, path2, name) {
+
+			if (name == "Beach"){
+
+				// First Outfit Model
+				var objLoader = new THREE.OBJLoader();
+				objLoader.load(path, function(group){
+
+					var geometry = group.children[ 0 ].geometry;
+					geometry.attributes.uv2 = geometry.attributes.uv;
+
+
+					mesh = new THREE.Mesh( geometry, materialNormal );
+
+					mesh.scale.multiplyScalar( 0.5 );
+					mesh.position.set(41, 6, 46.5);
+					mesh.rotation.y = Math.PI / 4;
+					//root.add( mesh );
+					scene.add( mesh );
+
+				});
+
+				var objLoader2 = new THREE.OBJLoader();
+				objLoader2.load(path2, function(group2){
+
+					var geometry2 = group2.children[ 0 ].geometry;
+					geometry2.attributes.uv2 = geometry2.attributes.uv;
+
+					mesh2 = new THREE.Mesh( geometry2, materialNormal );
+
+					mesh2.scale.multiplyScalar( 15 );
+					mesh2.position.set(44, 4.2, 48.8);
+					mesh2.rotation.y = Math.PI / 4;
+					//mesh.name = "shirt";
+
+					//root.add( mesh );
+					scene.add( mesh2);
+				});
+
+			}else if (name == "Formal"){
+
+				// First Outfit Model
+				var objLoader3 = new THREE.OBJLoader();
+				objLoader3.load(path, function(group3){
+
+					var geometry3 = group3.children[ 0 ].geometry;
+					geometry3.attributes.uv2 = geometry3.attributes.uv;
+
+
+					mesh3 = new THREE.Mesh( geometry3, materialNormal );
+
+					mesh3.scale.multiplyScalar( 0.5 );
+					mesh3.position.set(41, 6, 46.5);
+					mesh3.rotation.y = Math.PI / 4;
+					//root.add( mesh );
+					scene.add( mesh3 );
+
+				});
+
+
+			}else if (name == "Casual"){
+
+				console.log('Casual');
+
+			}else{
+				mesh.visible = false;
+				mesh2.visible = false;
+				mesh3.visible = false;
+			}
 
 		}
 

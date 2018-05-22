@@ -35,7 +35,7 @@ function Model() {
   	});
   }
 
-  this.OBJModelWithoutTexture = function (x, y, z, rotate, modelObj) {
+  this.OBJModelWithoutTexture = function (x, y, z, rotate, modelObj, material) {
 
     var mat1 = new THREE.MeshPhongMaterial({color: 0xff6600,specular: 0x111111, shininess: 1 , reflectivity: 0.3});
     var mat2 = new THREE.MeshPhongMaterial({color: 0x001133, specular: 0x111111, shininess: 1 , reflectivity: 0.3});
@@ -54,7 +54,7 @@ function Model() {
         if( node instanceof THREE.Mesh ){
           node.castShadow = true;
           node.receiveShadow = true;
-          //node.material = mat1;
+          node.material = material;
         }
       });
 
@@ -66,7 +66,7 @@ function Model() {
       companion = mesh;
     });
 
-    
+
 
   }
 
