@@ -52,11 +52,10 @@
 
 	</head>
 	<body>
-	<div id="menu"></div>
-	<div id="materials"></div>
-	<div id="budget"></div>
-
-	<div id="container"><br /><br /><br /><br /><br /></div>
+		<div id="menu"></div>
+		<div id="materials"></div>
+		<div id="budget"></div>
+		<div id="container"></div>
 		<script src="MyFiles/floorObject.js"></script>
 		<script src="MyFiles/light.js"></script>
 		<script src="MyFiles/Model.js"></script>
@@ -77,9 +76,8 @@
 
 		//-----------------------------GLOBAL VARIABLES---------------------------\\
 
-		var canRemove;
 		var beach, formal, casual;
-		var mesh2, mesh3;
+		var mesh2, mesh3, mesh4, mesh5;
 		var tmp;
 		var current_material, effectController;
 		var myObjects;
@@ -93,6 +91,7 @@
 		var HEIGHT = window.innerHeight;
 		var root;
 		var mesh, materialStandard, materialDepthBasic, materialDepthRGBA, materialNormal;
+		var floMaterial, stMaterial, cbMaterial, abMaterial;
 		var height = 500;
 		var SCALE = 2.436143;
 		var BIAS = - 0.428408;
@@ -110,30 +109,42 @@
 
 		textureLoader = new THREE.TextureLoader();
 
-		var normalMap = textureLoader.load( "models/Ninja/normal.jpg" );
-		var aoMap = textureLoader.load( "models/Ninja/ao.jpg" );
-		var displacementMap = textureLoader.load( "models/Ninja/displacement.jpg" );
+		var normalMap = textureLoader.load( "models/Materials/normal.jpg" );
+		var aoMap = textureLoader.load( "models/Materials/ao.jpg" );
+		var displacementMap = textureLoader.load( "models/Materials/symetric.jpg" );
+		var flowers_01_material = textureLoader.load("models/Materials/flowers_1.jpg");
+		var stoneTexture = textureLoader.load("models/Materials/stoneTexture.png");
+		var cubeBoxTexture = textureLoader.load("models/Materials/cubeBoxTexture.jpg");
+		var abstractTexture = textureLoader.load("models/Materials/abstract.jpg");
+
+
+
 
 		var menuContainer = document.getElementById('menu');
+		var materialContainer = document.getElementById('materials');
 
 
-		var materiall = new THREE.MeshLambertMaterial({ color: 0xff6600, combine: THREE.MixOperation, reflectivity: 0.3 });
+		var materiall = new THREE.MeshLambertMaterial({ color: 0xff6600, reflectivity: 0.3 });
 
 		var MATERIALSS= {
 
-			"orange": new THREE.MeshLambertMaterial({color: 0xff6600, combine: THREE.MixOperation, reflectivity: 0.3}),
-			"blue": new THREE.MeshLambertMaterial({color: 0x001133, combine: THREE.MixOpertation, reflectivity: 0.3})
+			"white": new THREE.MeshPhongMaterial({color: 0xffffff, reflectivity: 0.3}),
+			"orange": new THREE.MeshPhongMaterial({color: 0xff6600, reflectivity: 0.3}),
+			"flowers": new THREE.MeshPhongMaterial({map: flowers_01_material, reflectivity: 0.3}),
+			"stone": new THREE.MeshPhongMaterial({map: stoneTexture, reflectivity: 0.3}),
+			"cubeBox": new THREE.MeshPhongMaterial({map: cubeBoxTexture, reflectivity: 0.3}),
+			"abstract": new THREE.MeshPhongMaterial({map: abstractTexture, reflectivity: 0.3})
 
 		}
 
 		var OBJECTS = {
 
-			"ManObjectContainer": "man.obj",
+			"ManObjectContainer": "modeloChino.obj",
 			"WomenObjectContainer": "woman.obj"
 		}
 
 		var params = {
-				Material: 'standard',
+				Material: 'normal',
 		};
 
 		var params2 = {
@@ -177,9 +188,14 @@
 
 
 			var ma = gui.addFolder("Materials");
+
 			var ob = gui.addFolder("Outfits");
 
-			ma.add( params, 'Material', [ 'standard', 'normal', 'depthBasic', 'depthRGBA' ]);
+			ma.add( params, 'Material', [
+				'standard', 'normal', 'depthBasic', 'depthRGBA', 'flowers', 'stone',
+				'cubeBox', 'abstract'
+			]);
+
 			beach = ob.add( params2, 'Beach');
 			formal = ob.add( params2, 'Formal');
 			casual = ob.add( params2, 'Casual');
@@ -238,11 +254,19 @@
 
 			materialNormal = normalMaterial();
 
+			floMaterial = flowersMaterial();
+
+			stMaterial = stoneMaterial();
+
+			cbMaterial = cubeBoxMaterial();
+
+			abMaterial = abstractMaterial();
+
 
 	    // ---------  OBJ LOADER --------------------- \\
 
 			//OBJLoader(45, 0, 50, "models/man.obj" );
-			model.OBJModelWithoutTexture(45, 0, 50, 4, "models/man.obj", materialStandard);
+			model.OBJModelWithoutTexture(45, 0, 50, -4, "models/modeloChino.obj", MATERIALSS.white);
 
 
 		}
@@ -259,12 +283,14 @@
 		function render() {
 
 
-			if(mesh && mesh2 && mesh3){
+			if(mesh && mesh2 && mesh3 && mesh4 && mesh5){
 
 				// Material change
 				var material = mesh.material;
 				var material2 = mesh2.material;
 				var material3 = mesh3.material;
+				var material4 = mesh4.material;
+				var material5 = mesh5.material;
 
 				switch (params.Material) {
 
@@ -272,6 +298,10 @@
 					case 'depthBasic': material = materialDepthBasic; break;
 					case 'depthRGBA': material = materialDepthRGBA; break;
 					case 'normal': material = materialNormal; break;
+					case 'flowers': material = floMaterial; break;
+					case 'stone': material = stMaterial; break;
+					case 'cubeBox': material = cbMaterial; break;
+					case 'abstract': material = abMaterial; break;
 
 				}
 
@@ -281,6 +311,10 @@
 					case 'depthBasic': material2 = materialDepthBasic; break;
 					case 'depthRGBA': material2 = materialDepthRGBA; break;
 					case 'normal': material2 = materialNormal; break;
+					case 'flowers': material2 = floMaterial; break;
+					case 'stone': material2 = stMaterial; break;
+					case 'cubeBox': material2 = cbMaterial; break;
+					case 'abstract': material2 = abMaterial; break;
 
 				}
 
@@ -290,9 +324,43 @@
 					case 'depthBasic': material3 = materialDepthBasic; break;
 					case 'depthRGBA': material3 = materialDepthRGBA; break;
 					case 'normal': material3 = materialNormal; break;
+					case 'flowers': material3 = floMaterial; break;
+					case 'stone': material3 = stMaterial; break;
+					case 'cubeBox': material3 = cbMaterial; break;
+					case 'abstract': material3 = abMaterial; break;
 
 				}
 
+				switch (params.Material){
+
+					case 'standard': material4 = materialStandard; break;
+					case 'depthBasic': material4 = materialDepthBasic; break;
+					case 'depthRGBA': material4 = materialDepthRGBA; break;
+					case 'normal': material4 = materialNormal; break;
+					case 'flowers': material4 = floMaterial; break;
+					case 'stone': material4 = stMaterial; break;
+					case 'cubeBox': material4 = cbMaterial; break;
+					case 'abstract': material4 = abMaterial; break;
+
+				}
+
+				switch (params.Material){
+
+					case 'standard': material5 = materialStandard; break;
+					case 'depthBasic': material5 = materialDepthBasic; break;
+					case 'depthRGBA': material5 = materialDepthRGBA; break;
+					case 'normal': material5 = materialNormal; break;
+					case 'flowers': material5 = floMaterial; break;
+					case 'stone': material5 = stMaterial; break;
+					case 'cubeBox': material5 = cbMaterial; break;
+					case 'abstract': material5 = abMaterial; break;
+
+				}
+
+
+
+				mesh5.material = material5
+				mesh4.material = material4;
 				mesh3.material = material3;
 				mesh2.material = material2;
 				mesh.material = material;
@@ -301,21 +369,42 @@
 
 				// Outfit selection
 				if (params2.Beach == true){
+
 					mesh.visible = true;
 					mesh2.visible = true;
 
-				} else if (params2.Formal == true){
+					mesh3.visble = false;
+					mesh4.visible = false;
+					mesh5.visible = false;
+
+				} else if (params2.Casual == true){
 
 					mesh.visible = false;
 					mesh2.visible = false;
 
 					mesh3.visible = true;
 
-				}else{
+					mesh4.visible = false;
+					mesh5.visible = false;
+
+				}else if(params2.Formal == true){
+
+
+					mesh.visible = false;
+					mesh2.visible = false;
+					mesh3.visible = false;
+
+					mesh4.visible = true;
+					mesh5.visible = true;
+				}else {
 					mesh.visible = false;
 					mesh2.visible = false;
 
 					mesh3.visible = false;
+
+					mesh4.visible = false;
+					mesh5.visible = false;
+
 				}
 
 				//----------------------------------------------------------------------
@@ -323,8 +412,6 @@
 
 				//Customization
 				var budgUSD = params3.USD;
-
-
 
 				// USD
 				if (budgUSD >= 0){
@@ -335,7 +422,6 @@
 					}else if (budgUSD >= 50){
 						beach.domElement.hidden = false;
 					}
-
 					//Formal
 					if (budgUSD < 300 ){
 						formal.domElement.hidden = true;
@@ -343,12 +429,16 @@
 						formal.domElement.hidden = false;
 					}
 
+					//Casual
+					if (budgUSD < 100){
+						casual.domElement.hidden = true;
+					}else if (budgUSD >= 100){
+						casual.domElement.hidden = false;
+					}
 
 				}
-				
+
 			}
-
-
 
 			renderer.render(scene, camera);
 
@@ -385,15 +475,16 @@
 
 
 			// X red, Y green, Z blue
-			axis.show(200);
+			//axis.show(200);
 
-			//objects
+			// creamos piso con textura de grid.png
 			floorObject.show(2000,2000,10,100);
 
 
-			//Lights
+			//creamos una luz tipo spotLight
 			spotLight = light.spotLight();
 
+			// creamos una luz tipo pointLight
 			pointLight = light2.pointLight();
 			pointLight.position.set(50,150,10);
 			pointLight.distance = 310;
@@ -414,17 +505,14 @@
 
 			//
 			//model.OBJModelWithoutTexture(45, 0, 50, 13, "models/man.obj");
-
-
-
 			//OBJLoader(41, 6, 46.5, "models/WorkoutShorts.OBJ", "shorts");
 			//customOBJLoader(44, 4.2, 48.8, "models/BetterShirt.obj", 15, "shirt");
 
 			//OUTFIT MODELS CALL
 
-			OBJLoaderOutfit("models/WorkoutShorts.OBJ","models/BetterShirt.obj", "Beach");
-			OBJLoaderOutfit("models/WorkoutShorts.OBJ","models/BetterShirt.obj", "Formal");
-
+			OBJLoaderOutfit("models/pantalonetaPlaya.obj","models/camisilla.obj", "models/ropaCasual.obj","models/chaleco.obj", "models/pantalonn.obj","Beach");
+			OBJLoaderOutfit("models/pantalonetaPlaya.obj","models/camisilla.obj", "models/ropaCasual.obj","models/chaleco.obj", "models/pantalonn.obj","Casual");
+			OBJLoaderOutfit("models/pantalonetaPlaya.obj","models/camisilla.obj", "models/ropaCasual.obj","models/chaleco.obj", "models/pantalonn.obj","Formal");
 		}
 
 
@@ -439,10 +527,16 @@
 
 			modell = new Model();
 
-			return function ( event ) {
-				model.OBJModelWithoutTexture(45, 0, 50, 4, url,materialStandard);
 
-				//OBJLoader(45, 0, 50, url);
+			return function ( event ) {
+
+				var name = modelName();
+
+				if (name == "default"){
+					model.OBJModelWithoutTexture(45, 0, 50, 4, url,MATERIALSS.white);
+				}else {
+					model.OBJModelWithoutTexture(45, 0, 50, -4, url,MATERIALSS.white);
+				}
 
 			}
 		}
@@ -455,20 +549,20 @@
 
 				var name = modelName();
 
-				var url1 = "models/"+ "man.obj";
+				var url1 = "models/"+ "modeloChino.obj";
 				var url2 = "models/"+ "woman.obj";
 
 
-				if ( name  == "man") {
+				if ( name  == "default") {
 					console.log(name);
 
-					modell.OBJModelWithTexture(45, 0, 50, 13, url1, mat);
+					modell.OBJModelWithoutTexture(45, 0, 50, -4, url1, mat);
 
 				}else  if (name == "Form0"){
 
 					console.log(name);
 
-					modell.OBJModelWithTexture(45, 0, 50, 13, url2, mat);
+					modell.OBJModelWithTexture(45, 0, 50, 4, url2, mat);
 				}else{
 					console.log(name);
 				}
@@ -494,19 +588,19 @@
 
 			}
 
-			// for(var i in MATERIALSS){
-			//
-			// 	var button2 = document.createElement('button');
-			//
-			// 	button2.innerHTML = i;
-			//
-			// 	materialContainer.appendChild(button2);
-			//
-			// 	var materialB = MATERIALSS[i];
-			//
-			// 		button2.addEventListener('click', ModelMaterialButtonCallBack( materialB), false);
-			//
-			// }
+			for(var i in MATERIALSS){
+
+				var button2 = document.createElement('button');
+
+				button2.innerHTML = i;
+
+				materialContainer.appendChild(button2);
+
+				var materialB = MATERIALSS[i];
+
+					button2.addEventListener('click', ModelMaterialButtonCallBack( materialB), false);
+
+			}
 
 		}
 
@@ -537,12 +631,10 @@
 
 			var depthBasicMaterial;
 
-			depthBasicMaterial = new THREE.MeshDepthMaterial( {
-				depthPacking: THREE.BasicDepthPacking,
-				displacementMap: displacementMap,
-				displacementScale: SCALE,
-				displacementBias: BIAS,
-				side: THREE.DoubleSide
+			depthBasicMaterial = new THREE.MeshPhongMaterial( {
+				map:displacementMap,
+				reflectivity: 0.3
+
 			} );
 
 			return depthBasicMaterial;
@@ -580,6 +672,59 @@
 			} );
 
 			return normalMaterial;
+
+		}
+
+		function flowersMaterial() {
+
+			var flMaterial;
+			flMaterial = new THREE.MeshPhongMaterial( {
+
+				displacementScale: SCALE,
+				displacementBias: BIAS,
+				normalMap: normalMap,
+				normalScale: new THREE.Vector2( 1, - 1 ),
+				//flatShading: true,
+				side: THREE.DoubleSide,
+				map: flowers_01_material
+			} );
+
+			return flMaterial;
+
+		}
+
+		function stoneMaterial() {
+
+			var stoneMaterial;
+			stoneMaterial = new THREE.MeshPhongMaterial( {
+				map: stoneTexture,
+				reflectivity: 0.3
+			} );
+
+			return stoneMaterial;
+		}
+
+		function cubeBoxMaterial(){
+
+			var cubeBoxMaterial;
+			cubeBoxMaterial = new THREE.MeshPhongMaterial({
+				map: cubeBoxTexture,
+				reflectivity: 0.3
+			});
+
+			return cubeBoxMaterial;
+
+		}
+
+		function abstractMaterial(){
+
+			var abstractMaterial;
+			abstractMaterial = new THREE.MeshPhongMaterial({
+				map: abstractTexture,
+				reflectivity: 0.3
+			});
+
+			return abstractMaterial;
 
 		}
 
@@ -651,13 +796,13 @@
 			});
 		}
 
-		function OBJLoaderOutfit( path, path2, name) {
+		function OBJLoaderOutfit( beachPath, beachPath2, casualPath, formalPath, formalPath2, name) {
 
 			if (name == "Beach"){
 
 				// First Outfit Model
 				var objLoader = new THREE.OBJLoader();
-				objLoader.load(path, function(group){
+				objLoader.load(beachPath, function(group){
 
 					var geometry = group.children[ 0 ].geometry;
 					geometry.attributes.uv2 = geometry.attributes.uv;
@@ -666,35 +811,35 @@
 					mesh = new THREE.Mesh( geometry, materialNormal );
 
 					mesh.scale.multiplyScalar( 0.5 );
-					mesh.position.set(41, 6, 46.5);
-					mesh.rotation.y = Math.PI / 4;
+					mesh.position.set(45, -3, 50);
+					mesh.rotation.y = Math.PI / -4;
 					//root.add( mesh );
 					scene.add( mesh );
 
 				});
 
 				var objLoader2 = new THREE.OBJLoader();
-				objLoader2.load(path2, function(group2){
+				objLoader2.load(beachPath2, function(group2){
 
 					var geometry2 = group2.children[ 0 ].geometry;
 					geometry2.attributes.uv2 = geometry2.attributes.uv;
 
 					mesh2 = new THREE.Mesh( geometry2, materialNormal );
 
-					mesh2.scale.multiplyScalar( 15 );
-					mesh2.position.set(44, 4.2, 48.8);
-					mesh2.rotation.y = Math.PI / 4;
+					mesh2.scale.multiplyScalar( 0.5 );
+					mesh2.position.set(45, -7, 50);
+					mesh2.rotation.y = Math.PI / -4;
 					//mesh.name = "shirt";
 
 					//root.add( mesh );
 					scene.add( mesh2);
 				});
 
-			}else if (name == "Formal"){
+			}else if (name == "Casual"){
 
 				// First Outfit Model
 				var objLoader3 = new THREE.OBJLoader();
-				objLoader3.load(path, function(group3){
+				objLoader3.load(casualPath, function(group3){
 
 					var geometry3 = group3.children[ 0 ].geometry;
 					geometry3.attributes.uv2 = geometry3.attributes.uv;
@@ -703,24 +848,60 @@
 					mesh3 = new THREE.Mesh( geometry3, materialNormal );
 
 					mesh3.scale.multiplyScalar( 0.5 );
-					mesh3.position.set(41, 6, 46.5);
-					mesh3.rotation.y = Math.PI / 4;
+					mesh3.position.set(45, 0.5, 50);
+					mesh3.rotation.y = Math.PI / -4;
 					//root.add( mesh );
 					scene.add( mesh3 );
 
 				});
 
 
-			}else if (name == "Casual"){
+			}else if (name == "Formal"){
 
-				console.log('Casual');
+
+				var objLoader4 = new THREE.OBJLoader();
+				objLoader4.load(formalPath, function(group4){
+
+					var geometry4 = group4.children[ 0 ].geometry;
+					geometry4.attributes.uv2 = geometry4.attributes.uv;
+
+
+					mesh4 = new THREE.Mesh( geometry4, materialNormal );
+
+					mesh4.scale.multiplyScalar( 0.5 );
+					mesh4.position.set(45.6, 8, 50.6);
+					mesh4.rotation.y = Math.PI / 4;
+					//root.add( mesh );
+					scene.add( mesh4 );
+
+				});
+
+				var objLoader5 = new THREE.OBJLoader();
+				objLoader5.load(formalPath2, function(group5){
+
+					var geometry5 = group5.children[ 0 ].geometry;
+					geometry5.attributes.uv2 = geometry5.attributes.uv;
+
+
+					mesh5 = new THREE.Mesh( geometry5, materialNormal );
+
+					mesh5.scale.multiplyScalar( 0.5 );
+					mesh5.position.set(46, -2, 51);
+					mesh5.rotation.y = Math.PI / 4;
+					//root.add( mesh );
+					scene.add( mesh5 );
+
+				});
 
 			}else{
+
 				mesh.visible = false;
 				mesh2.visible = false;
 				mesh3.visible = false;
-			}
+				mesh4.visible = false;
+				mesh5.visible = false;
 
+			}
 		}
 
 

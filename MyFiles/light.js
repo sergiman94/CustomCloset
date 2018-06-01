@@ -14,9 +14,9 @@ function Light() {
   	light.receiveShadow = true;
   	scene.add(light);
 
-    var sphereSize = 5;
-    var pointLightHelper = new THREE.PointLightHelper( light, sphereSize );
-    scene.add( pointLightHelper );
+    // var sphereSize = 5;
+    // var pointLightHelper = new THREE.PointLightHelper( light, sphereSize );
+    // scene.add( pointLightHelper );
 
     return light;
 
@@ -44,8 +44,8 @@ function Light() {
     spotLight.distance = 320;
     spotLight.intensity = 1.9;
 
-    var spotLightHelper = new THREE.SpotLightHelper(spotLight);
-    scene.add(spotLightHelper);
+    // var spotLightHelper = new THREE.SpotLightHelper(spotLight);
+    // scene.add(spotLightHelper);
 
     scene.add(spotLight);
   }

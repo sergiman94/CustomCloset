@@ -130,41 +130,4 @@ function Model() {
   }
 
 
-} // Class
-
-
-
-
-// this.OBJModelWithoutTexture = function (x, y, z, rotate, modelObj) {
-//
-//   var mat1 = new THREE.MeshPhongMaterial({color: 0xff6600,specular: 0x111111, shininess: 1 , reflectivity: 0.3});
-//   var mat2 = new THREE.MeshPhongMaterial({color: 0x001133, specular: 0x111111, shininess: 1 , reflectivity: 0.3});
-//
-//   while (root.children.length > 0){
-//
-//     var object = root.children[0];
-//     object.parent.remove( object );
-//   }
-//
-//
-//   var objLoader = new THREE.OBJLoader();
-//
-//   objLoader.load(modelObj, function(mesh){
-//     mesh.traverse(function(node){
-//       if( node instanceof THREE.Mesh ){
-//         node.castShadow = true;
-//         node.receiveShadow = true;
-//         //node.material = mat1;
-//       }
-//     });
-//
-//     mesh.position.set(x, y, z);
-//     mesh.rotation.y = Math.PI/rotate;
-//     mesh.scale.set(0.5, 0.5, 0.5);
-//     root.add( mesh );
-//
-//     companion = mesh;
-//   });
-//
-//
-// }
+} 
